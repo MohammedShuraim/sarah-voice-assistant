@@ -1,0 +1,17 @@
+# Sarah Voice Assistant — Python dependencies
+
+# HTTP client for the Groq API
+requests>=2.32.3
+
+# Loads secrets from .env so no keys live in source
+python-dotenv>=1.0.1
+
+# Text to speech
+gTTS>=2.5.4
+
+# Microphone capture
+sounddevice>=0.5.1
+numpy>=2.1.0
+
+# Audio playback
+playsound>=1.3.0
