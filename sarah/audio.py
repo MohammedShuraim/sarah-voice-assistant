@@ -1,18 +1,21 @@
-"""Microphone capture."""
+"""Microphone capture and audio playback."""
 
 from __future__ import annotations
 
+import contextlib
 import os
 import wave
+from pathlib import Path
 
 import numpy as np
 import sounddevice as sd
+from playsound import playsound
 
 from . import config
 
 
 class AudioError(RuntimeError):
-    """Raised when the microphone is unavailable."""
+    """Raised when the microphone or speakers are unavailable."""
 
 
 def record(
@@ -38,3 +41,17 @@ def _write_wav(path: str | os.PathLike[str], audio: np.ndarray, sample_rate: int
         handle.setsampwidth(2)  # int16
         handle.setframerate(sample_rate)
         handle.writeframes(audio.tobytes())
+
+
+def play_file(path: str | os.PathLike[str]) -> None:
+    """Play an audio file, blocking until it finishes."""
+    try:
+        playsound(str(path))
+    except Exception as exc:
+        raise AudioError(f"Could not play audio: {exc}") from exc
+
+
+def delete_quietly(path: str | os.PathLike[str]) -> None:
+    """Remove a temporary audio file, ignoring the case where it is missing."""
+    with contextlib.suppress(OSError):
+        Path(path).unlink()
