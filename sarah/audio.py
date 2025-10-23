@@ -1,9 +1,14 @@
-"""Microphone capture and audio playback."""
+"""Microphone capture and audio playback.
+
+Recording stops on its own once you go quiet, so there is no fixed time limit to
+talk within.
+"""
 
 from __future__ import annotations
 
 import contextlib
 import os
+import queue
 import wave
 from pathlib import Path
 
@@ -18,21 +23,81 @@ class AudioError(RuntimeError):
     """Raised when the microphone or speakers are unavailable."""
 
 
-def record(
+def _rms(frame: np.ndarray) -> float:
+    """Root-mean-square amplitude of an int16 frame, scaled to 0.0-1.0."""
+    if frame.size == 0:
+        return 0.0
+    # float64 avoids overflow when squaring int16 values.
+    return float(np.sqrt(np.mean(frame.astype(np.float64) ** 2)) / 32768.0)
+
+
+def record_until_silence(
     path: str | os.PathLike[str],
-    seconds: float = 5.0,
     sample_rate: int = config.SAMPLE_RATE,
-) -> None:
-    """Record a fixed number of seconds from the default microphone."""
+    max_seconds: float = config.MAX_RECORD_SECONDS,
+    silence_seconds: float = config.SILENCE_SECONDS,
+    threshold: float = config.SILENCE_THRESHOLD,
+    on_start=None,
+) -> bool:
+    """Record from the default microphone until the speaker stops talking.
+
+    Returns True if speech was captured, False if the recording was silence
+    throughout. Trailing silence is kept, since Whisper handles it fine and
+    trimming risks clipping soft word endings.
+    """
+    block_frames = max(1, int(sample_rate * 0.05))
+    silence_blocks_needed = max(1, int(silence_seconds / 0.05))
+    max_blocks = max(1, int(max_seconds / 0.05))
+
+    blocks: list[np.ndarray] = []
+    frames: queue.Queue[np.ndarray] = queue.Queue()
+
+    def callback(indata, _frames, _time, status):
+        if status:
+            # Overflows are common on loaded machines and are safe to ignore.
+            pass
+        frames.put(indata.copy())
+
     try:
-        audio = sd.rec(
-            int(seconds * sample_rate), samplerate=sample_rate, channels=1, dtype="int16"
+        stream = sd.InputStream(
+            samplerate=sample_rate,
+            channels=1,
+            dtype="int16",
+            blocksize=block_frames,
+            callback=callback,
         )
-        sd.wait()
     except Exception as exc:  # sounddevice raises a variety of backend errors
         raise AudioError(f"Could not open the microphone: {exc}") from exc
 
+    speech_started = False
+    trailing_silence = 0
+
+    with stream:
+        if on_start is not None:
+            on_start()
+        for _ in range(max_blocks):
+            try:
+                block = frames.get(timeout=1.0)
+            except queue.Empty:
+                break
+
+            blocks.append(block)
+            level = _rms(block)
+
+            if level >= threshold:
+                speech_started = True
+                trailing_silence = 0
+            elif speech_started:
+                trailing_silence += 1
+                if trailing_silence >= silence_blocks_needed:
+                    break
+
+    if not speech_started:
+        return False
+
+    audio = np.concatenate(blocks) if blocks else np.zeros((0, 1), dtype=np.int16)
     _write_wav(path, audio, sample_rate)
+    return True
 
 
 def _write_wav(path: str | os.PathLike[str], audio: np.ndarray, sample_rate: int) -> None:
