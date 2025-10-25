@@ -1,4 +1,7 @@
 # Sarah Voice Assistant — Python dependencies
+# Tested on Python 3.10 - 3.13.
+# Minimum versions rather than exact pins, so this does not fight other packages
+# already installed in your environment.
 
 # HTTP client for the Groq API
 requests>=2.32.3
@@ -13,5 +16,6 @@ gTTS>=2.5.4
 sounddevice>=0.5.1
 numpy>=2.1.0
 
-# Audio playback
-playsound>=1.3.0
+# MP3 playback. Replaces playsound and pydub, which both fail on Python 3.13
+# because the stdlib "audioop" module they depend on was removed in that release.
+pygame>=2.6.1

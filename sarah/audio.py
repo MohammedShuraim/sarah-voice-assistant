@@ -1,7 +1,9 @@
 """Microphone capture and audio playback.
 
 Recording stops on its own once you go quiet, so there is no fixed time limit to
-talk within.
+talk within. Playback goes through pygame's mixer, which decodes MP3 natively --
+pydub and playsound both break on Python 3.13 because the stdlib ``audioop``
+module they rely on was removed in that release.
 """
 
 from __future__ import annotations
@@ -14,7 +16,6 @@ from pathlib import Path
 
 import numpy as np
 import sounddevice as sd
-from playsound import playsound
 
 from . import config
 
@@ -108,12 +109,40 @@ def _write_wav(path: str | os.PathLike[str], audio: np.ndarray, sample_rate: int
         handle.writeframes(audio.tobytes())
 
 
+_mixer_ready = False
+
+
+def _ensure_mixer() -> None:
+    global _mixer_ready
+    if _mixer_ready:
+        return
+    # Keep pygame from printing its banner to stdout on import.
+    os.environ.setdefault("PYGAME_HIDE_SUPPORT_PROMPT", "1")
+    try:
+        import pygame
+    except ImportError as exc:
+        raise AudioError(
+            "pygame is required for audio playback. Install it with 'pip install pygame'."
+        ) from exc
+
+    try:
+        pygame.mixer.init()
+    except Exception as exc:
+        raise AudioError(f"No audio output device available: {exc}") from exc
+    _mixer_ready = True
+
+
 def play_file(path: str | os.PathLike[str]) -> None:
     """Play an audio file, blocking until it finishes."""
-    try:
-        playsound(str(path))
-    except Exception as exc:
-        raise AudioError(f"Could not play audio: {exc}") from exc
+    _ensure_mixer()
+    import pygame
+
+    sound = pygame.mixer.Sound(str(path))
+    channel = sound.play()
+    if channel is None:
+        return
+    while channel.get_busy():
+        pygame.time.wait(50)
 
 
 def delete_quietly(path: str | os.PathLike[str]) -> None:
