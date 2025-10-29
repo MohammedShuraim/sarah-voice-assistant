@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import tempfile
 from pathlib import Path
 
@@ -26,8 +27,18 @@ def synthesize(text: str, path: str | Path) -> Path:
 
 
 def speak(text: str) -> None:
-    """Say something out loud, cleaning up the temporary file afterwards."""
-    with tempfile.NamedTemporaryFile(suffix=".mp3") as handle:
-        temp_path = Path(handle.name)
+    """Say something out loud, cleaning up the temporary file afterwards.
+
+    gTTS needs a network round trip, so this is not instant. Failures are raised
+    rather than swallowed; callers decide whether a silent assistant is fatal.
+    """
+    # mkstemp rather than NamedTemporaryFile: gTTS and the mixer both reopen the
+    # file by path, which Windows forbids while the original handle is still open.
+    descriptor, name = tempfile.mkstemp(suffix=".mp3", prefix="sarah-")
+    os.close(descriptor)
+    temp_path = Path(name)
+    try:
         synthesize(text, temp_path)
         audio.play_file(temp_path)
+    finally:
+        audio.delete_quietly(temp_path)
