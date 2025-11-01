@@ -31,6 +31,13 @@ SILENCE_THRESHOLD = float(os.getenv("SILENCE_THRESHOLD", "0.015"))
 TTS_LANGUAGE = os.getenv("TTS_LANGUAGE", "en")
 HTTP_TIMEOUT = float(os.getenv("HTTP_TIMEOUT", "30"))
 
+SYSTEM_PROMPT = os.getenv(
+    "SYSTEM_PROMPT",
+    "You are Sarah, a friendly voice assistant. Because your replies are spoken "
+    "aloud, keep them short and conversational — two or three sentences at most. "
+    "Never use markdown, bullet points, or emoji.",
+)
+
 
 def require_groq_key() -> str:
     """Return the Groq API key, or explain how to set it."""
