@@ -38,6 +38,9 @@ SYSTEM_PROMPT = os.getenv(
     "Never use markdown, bullet points, or emoji.",
 )
 
+# Conversation turns kept in memory. Older turns are dropped to bound token cost.
+HISTORY_LIMIT = int(os.getenv("HISTORY_LIMIT", "20"))
+
 
 def require_groq_key() -> str:
     """Return the Groq API key, or explain how to set it."""
