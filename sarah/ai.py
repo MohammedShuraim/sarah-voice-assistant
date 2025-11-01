@@ -46,6 +46,12 @@ class Conversation:
         if not user_input.strip():
             raise ChatError("Cannot send an empty message.")
 
+        # Checked before the turn is recorded so a missing key leaves history clean.
+        try:
+            api_key = config.require_groq_key()
+        except config.ConfigError as exc:
+            raise ChatError(str(exc)) from exc
+
         self._messages.append({"role": "user", "content": user_input})
         self._trim()
 
@@ -56,15 +62,35 @@ class Conversation:
             "max_tokens": max_tokens,
         }
         headers = {
-            "Authorization": f"Bearer {config.require_groq_key()}",
+            "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
         }
 
-        response = requests.post(
-            config.CHAT_URL, headers=headers, json=payload, timeout=config.HTTP_TIMEOUT
-        )
-        response.raise_for_status()
-        reply = response.json()["choices"][0]["message"]["content"].strip()
+        try:
+            response = requests.post(
+                config.CHAT_URL,
+                headers=headers,
+                json=payload,
+                timeout=config.HTTP_TIMEOUT,
+            )
+        except requests.RequestException as exc:
+            # Drop the unanswered turn so history stays a valid alternating log.
+            self._messages.pop()
+            raise ChatError(f"Could not reach Groq: {exc}") from exc
+
+        if response.status_code != 200:
+            self._messages.pop()
+            if response.status_code == 401:
+                raise ChatError("Groq rejected the API key (401). Check GROQ_API_KEY.")
+            if response.status_code == 429:
+                raise ChatError("Groq rate limit reached. Wait a moment and try again.")
+            raise ChatError(f"Chat request failed ({response.status_code}): {response.text[:200]}")
+
+        try:
+            reply = response.json()["choices"][0]["message"]["content"].strip()
+        except (KeyError, IndexError, ValueError) as exc:
+            self._messages.pop()
+            raise ChatError("Groq returned an unexpected response shape.") from exc
 
         self._messages.append({"role": "assistant", "content": reply})
         self._trim()
