@@ -203,8 +203,8 @@ def route(text: str) -> CommandResult:
         return CommandResult(handled=False)
 
     for triggers, handler in _PREFIX_COMMANDS:
-        for trigger in triggers:
-            if trigger in spoken:
+        for trigger in sorted(triggers, key=len, reverse=True):
+            if spoken.startswith(trigger + " ") or f" {trigger} " in f" {spoken} ":
                 argument = spoken.split(trigger, 1)[1].strip()
                 if argument:
                     return CommandResult(handled=True, reply=handler(argument))
