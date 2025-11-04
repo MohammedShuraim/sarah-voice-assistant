@@ -12,6 +12,8 @@ class ConfigError(RuntimeError):
 
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+WEATHER_API_KEY = os.getenv("WEATHER_API_KEY", "")
+NEWS_API_KEY = os.getenv("NEWS_API_KEY", "")
 
 GROQ_BASE_URL = os.getenv("GROQ_BASE_URL", "https://api.groq.com/openai/v1")
 TRANSCRIBE_URL = f"{GROQ_BASE_URL}/audio/transcriptions"

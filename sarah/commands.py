@@ -17,6 +17,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import quote_plus
 
+from . import services
+
 IS_WINDOWS = platform.system() == "Windows"
 HOME = Path.home()
 
@@ -128,6 +130,7 @@ _PREFIX_COMMANDS: tuple[tuple[tuple[str, ...], Callable[[str], str]], ...] = (
             f"YouTube results for {q}",
         ),
     ),
+    (("weather in", "weather for", "the weather in"), services.weather_report),
     (("open file", "open the file"), _open_named_file),
 )
 
@@ -183,6 +186,8 @@ _PHRASE_COMMANDS: tuple[tuple[tuple[str, ...], Callable[[], str]], ...] = (
     ),
     (("open music", "open my music"), lambda: _open_path("Music", "Music")),
     (("open videos", "open my videos"), lambda: _open_path("Videos", "Videos")),
+    (("the news", "top headlines", "tell me the news", "what's the news"), services.news_report),
+    (("the weather", "what's the weather", "how's the weather"), services.weather_report),
 )
 
 
