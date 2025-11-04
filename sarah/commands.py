@@ -15,9 +15,16 @@ import webbrowser
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
+from urllib.parse import quote_plus
 
 IS_WINDOWS = platform.system() == "Windows"
 HOME = Path.home()
+
+# Directories searched when opening a file by name, deepest-first is not needed
+# because os.walk already yields shallow matches earlier.
+SEARCH_ROOTS = ("Desktop", "Documents", "Downloads", "Pictures", "Music", "Videos")
+
+FILE_EXTENSIONS = ("", ".txt", ".pdf", ".docx", ".doc", ".xlsx", ".pptx", ".jpg", ".png", ".mp4")
 
 
 @dataclass
@@ -65,6 +72,38 @@ def _open_url(url: str, friendly: str) -> str:
     return f"Opening {friendly}."
 
 
+def find_file(filename: str) -> Path | None:
+    """Look for a file by name under the user's common folders."""
+    wanted = filename.lower()
+    for root_name in SEARCH_ROOTS:
+        root = HOME / root_name
+        if not root.is_dir():
+            continue
+        for current, _dirs, files in os.walk(root):
+            for candidate in files:
+                if candidate.lower() == wanted:
+                    return Path(current) / candidate
+    return None
+
+
+def _open_named_file(filename: str) -> str:
+    filename = filename.strip()
+    if not filename:
+        raise CommandError("Which file should I open?")
+
+    for extension in FILE_EXTENSIONS:
+        match = find_file(filename + extension)
+        if match is not None:
+            if IS_WINDOWS:
+                os.startfile(match)  # noqa: S606 - path came from a filesystem walk
+            else:
+                opener = "open" if platform.system() == "Darwin" else "xdg-open"
+                subprocess.Popen([opener, str(match)])
+            return f"Opening {match.name}."
+
+    raise CommandError(f"I could not find a file called {filename}.")
+
+
 def _tell_time() -> str:
     return f"It's {time.strftime('%I:%M %p').lstrip('0')}."
 
@@ -72,6 +111,25 @@ def _tell_time() -> str:
 def _tell_date() -> str:
     return f"Today is {time.strftime('%A, %B %d, %Y')}."
 
+
+# Phrase prefixes that carry an argument, checked before the exact-phrase table
+# so "search for cats" does not get swallowed by a bare "search" entry.
+_PREFIX_COMMANDS: tuple[tuple[tuple[str, ...], Callable[[str], str]], ...] = (
+    (
+        ("search for", "google for", "search google for", "look up"),
+        lambda q: _open_url(
+            f"https://www.google.com/search?q={quote_plus(q)}", f"a search for {q}"
+        ),
+    ),
+    (
+        ("play", "search youtube for", "youtube"),
+        lambda q: _open_url(
+            f"https://www.youtube.com/results?search_query={quote_plus(q)}",
+            f"YouTube results for {q}",
+        ),
+    ),
+    (("open file", "open the file"), _open_named_file),
+)
 
 # Exact phrases, longest first at match time so "open my downloads" wins over
 # a hypothetical shorter overlap.
@@ -144,6 +202,13 @@ def route(text: str) -> CommandResult:
     if not spoken:
         return CommandResult(handled=False)
 
+    for triggers, handler in _PREFIX_COMMANDS:
+        for trigger in triggers:
+            if trigger in spoken:
+                argument = spoken.split(trigger, 1)[1].strip()
+                if argument:
+                    return CommandResult(handled=True, reply=handler(argument))
+
     matches = [
         (trigger, handler)
         for triggers, handler in _PHRASE_COMMANDS
@@ -160,4 +225,6 @@ def route(text: str) -> CommandResult:
 
 def available_commands() -> list[str]:
     """Representative phrases for each command, for help text and the web UI."""
-    return [triggers[0] for triggers, _ in _PHRASE_COMMANDS]
+    phrases = [triggers[0] for triggers, _ in _PHRASE_COMMANDS]
+    phrases += [f"{triggers[0]} ..." for triggers, _ in _PREFIX_COMMANDS]
+    return phrases
