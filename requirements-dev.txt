@@ -1,0 +1,7 @@
+-r requirements.txt
+
+# Test runner
+pytest>=8.3.0
+
+# Linting and formatting
+ruff>=0.8.0
