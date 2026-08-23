@@ -3,7 +3,7 @@
 # Minimum versions rather than exact pins, so this does not fight other packages
 # already installed in your environment.
 
-# HTTP client for the Groq API
+# HTTP client for the Groq, weather, and news APIs
 requests>=2.32.3
 
 # Loads secrets from .env so no keys live in source
@@ -19,3 +19,7 @@ numpy>=2.1.0
 # MP3 playback. Replaces playsound and pydub, which both fail on Python 3.13
 # because the stdlib "audioop" module they depend on was removed in that release.
 pygame>=2.6.1
+
+# Web API for the React frontend
+Flask>=3.1.0
+flask-cors>=6.0.0
