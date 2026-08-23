@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import io
 import os
 import tempfile
 from pathlib import Path
@@ -24,6 +25,19 @@ def synthesize(text: str, path: str | Path) -> Path:
     except Exception as exc:  # gTTS surfaces network and language errors alike
         raise SpeechError(f"Speech synthesis failed: {exc}") from exc
     return Path(path)
+
+
+def synthesize_to_bytes(text: str) -> io.BytesIO:
+    """Render text to an in-memory MP3 stream, for serving over HTTP."""
+    if not text.strip():
+        raise SpeechError("Nothing to speak.")
+    buffer = io.BytesIO()
+    try:
+        gTTS(text=text, lang=config.TTS_LANGUAGE).write_to_fp(buffer)
+    except Exception as exc:
+        raise SpeechError(f"Speech synthesis failed: {exc}") from exc
+    buffer.seek(0)
+    return buffer
 
 
 def speak(text: str) -> None:
