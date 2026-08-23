@@ -23,6 +23,12 @@ TRANSCRIBE_MODEL = os.getenv("TRANSCRIBE_MODEL", "whisper-large-v3-turbo")
 CHAT_MODEL = os.getenv("CHAT_MODEL", "llama-3.3-70b-versatile")
 
 WAKE_WORD = os.getenv("WAKE_WORD", "hey sarah").lower()
+# Set REQUIRE_WAKE_WORD=false to have Sarah respond to every utterance.
+REQUIRE_WAKE_WORD = os.getenv("REQUIRE_WAKE_WORD", "true").lower() not in {
+    "false",
+    "0",
+    "no",
+}
 
 SAMPLE_RATE = int(os.getenv("SAMPLE_RATE", "16000"))
 MAX_RECORD_SECONDS = float(os.getenv("MAX_RECORD_SECONDS", "15"))
