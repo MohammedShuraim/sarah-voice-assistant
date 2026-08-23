@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 420" role="img" aria-label="Sarah  Virtual Desktop Assistant">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#050712"/>
+      <stop offset="50%" stop-color="#0a1024"/>
+      <stop offset="100%" stop-color="#070814"/>
+    </linearGradient>
+    <radialGradient id="glowA" cx="22%" cy="30%" r="48%">
+      <stop offset="0%" stop-color="#7c6cff" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#7c6cff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowB" cx="82%" cy="70%" r="46%">
+      <stop offset="0%" stop-color="#38d8f0" stop-opacity="0.38"/>
+      <stop offset="100%" stop-color="#38d8f0" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowC" cx="55%" cy="10%" r="30%">
+      <stop offset="0%" stop-color="#a78bfa" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#a78bfa" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f4f6ff"/>
+      <stop offset="55%" stop-color="#c4b5fd"/>
+      <stop offset="100%" stop-color="#67e8f9"/>
+    </linearGradient>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#38d8f0"/>
+      <stop offset="100%" stop-color="#7c6cff"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1280" height="420" fill="url(#bg)"/>
+  <rect width="1280" height="420" fill="url(#glowA)"/>
+  <rect width="1280" height="420" fill="url(#glowB)"/>
+  <rect width="1280" height="420" fill="url(#glowC)"/>
+
+  <!-- subtle grid -->
+  <g stroke="#94a3d6" stroke-opacity="0.06" stroke-width="1">
+    <path d="M0 70h1280M0 140h1280M0 210h1280M0 280h1280M0 350h1280"/>
+    <path d="M160 0v420M320 0v420M480 0v420M640 0v420M800 0v420M960 0v420M1120 0v420"/>
+  </g>
+
+  <!-- mic mark -->
+  <g transform="translate(168 210)">
+    <circle r="78" fill="#131829" stroke="url(#ring)" stroke-width="3"/>
+    <circle r="58" fill="none" stroke="#38d8f0" stroke-opacity="0.25" stroke-width="10"/>
+    <rect x="-14" y="-32" width="28" height="44" rx="14" fill="#eef1fb"/>
+    <path d="M-24 8a24 24 0 0 0 48 0" fill="none" stroke="#a78bfa" stroke-width="5" stroke-linecap="round"/>
+    <path d="M0 32v16M-16 48h32" fill="none" stroke="#99a2c4" stroke-width="5" stroke-linecap="round"/>
+  </g>
+
+  <text x="290" y="188" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif" font-size="92" font-weight="700" fill="url(#title)" letter-spacing="4">Sarah</text>
+  <text x="294" y="236" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif" font-size="28" fill="#99a2c4" letter-spacing="3">VIRTUAL DESKTOP ASSISTANT</text>
+  <text x="294" y="292" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif" font-size="20" fill="#c7d2fe">Speak. She listens. Your PC does the rest.</text>
+</svg>

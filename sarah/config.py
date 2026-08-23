@@ -1,10 +1,12 @@
 """Runtime configuration, loaded from the environment."""
 
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv()
+# Load from the project root even if the process was started elsewhere.
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 
 class ConfigError(RuntimeError):
