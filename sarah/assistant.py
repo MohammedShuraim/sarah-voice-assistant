@@ -18,8 +18,12 @@ class Reply:
 
     @property
     def should_speak(self) -> bool:
-        """Whether this reply is worth saying out loud."""
-        return self.handled and bool(self.text)
+        """Whether this reply is worth saying out loud.
+
+        Errors are shown but not spoken: they are diagnostics aimed at whoever is
+        running Sarah, not conversation.
+        """
+        return self.handled and bool(self.text) and self.source not in {"ignored", "error"}
 
 
 @dataclass
