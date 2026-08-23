@@ -1,7 +1,7 @@
 [project]
 name = "sarah-voice-assistant"
 version = "1.0.0"
-description = "A voice assistant powered by Groq's Whisper and Llama models"
+description = "A voice assistant powered by Groq's Whisper and GPT-OSS models"
 requires-python = ">=3.10"
 
 [tool.pytest.ini_options]

@@ -2,14 +2,20 @@ import { useEffect, useRef } from 'react'
 
 const SOURCE_LABELS = {
   command: 'system command',
-  chat: 'llama 3.3',
   wake: 'wake word',
   error: 'error',
 }
 
-function Bubble({ message }) {
+// The chat label names whichever model the backend reports, so it cannot go
+// stale when the configured model changes.
+function labelFor(message, chatModel) {
+  if (message.source === 'chat') return chatModel || 'chat model'
+  return SOURCE_LABELS[message.source]
+}
+
+function Bubble({ message, chatModel }) {
   const isUser = message.role === 'user'
-  const label = SOURCE_LABELS[message.source]
+  const label = labelFor(message, chatModel)
 
   return (
     <li className={`bubble-row ${isUser ? 'from-user' : 'from-sarah'}`}>
@@ -21,7 +27,7 @@ function Bubble({ message }) {
   )
 }
 
-export default function MessageList({ messages, busy }) {
+export default function MessageList({ messages, busy, chatModel }) {
   const endRef = useRef(null)
 
   useEffect(() => {
@@ -44,7 +50,7 @@ export default function MessageList({ messages, busy }) {
   return (
     <ul className="messages">
       {messages.map((message) => (
-        <Bubble key={message.id} message={message} />
+        <Bubble key={message.id} message={message} chatModel={chatModel} />
       ))}
       {busy && (
         <li className="bubble-row from-sarah">

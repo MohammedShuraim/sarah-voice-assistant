@@ -15,7 +15,7 @@ class StubConversation(ai.Conversation):
         self.fail = fail
         self.asked = []
 
-    def ask(self, user_input, temperature=0.7, max_tokens=300):
+    def ask(self, user_input, temperature=None, max_completion_tokens=None):
         self.asked.append(user_input)
         if self.fail:
             raise ai.ChatError("Groq is unreachable.")

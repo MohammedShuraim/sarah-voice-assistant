@@ -126,7 +126,7 @@ export default function App() {
           </span>
           <div>
             <h1>Sarah</h1>
-            <p>Voice assistant · Whisper + Llama on Groq</p>
+            <p>Voice assistant · Whisper + GPT-OSS on Groq</p>
           </div>
         </div>
 
@@ -152,7 +152,7 @@ export default function App() {
 
       <main className="stage">
         <section className="chat-card">
-          <MessageList messages={messages} busy={busy} />
+          <MessageList messages={messages} busy={busy} chatModel={health?.chat_model} />
 
           <div className="composer">
             <MicButton

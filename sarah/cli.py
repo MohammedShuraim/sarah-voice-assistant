@@ -7,8 +7,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+from . import ai, audio, commands, config, stt, tts
 from . import assistant as assistant_module
-from . import audio, commands, config, stt, tts
 
 
 def _print_banner(bot: assistant_module.Assistant) -> None:
@@ -65,6 +65,41 @@ def _listen_once(bot: assistant_module.Assistant, wav_path: Path) -> None:
         _speak(reply.text)
 
 
+def _check_models() -> int:
+    """Report whether the configured models are still served by Groq."""
+    try:
+        available = ai.list_available_models()
+    except ai.ChatError as exc:
+        print(f"Could not check models: {exc}", file=sys.stderr)
+        return 1
+
+    print(f"Groq is currently serving {len(available)} models:\n")
+    for model_id in available:
+        print(f"  {model_id}")
+
+    print()
+    missing = False
+    for label, configured in (
+        ("CHAT_MODEL", config.CHAT_MODEL),
+        ("TRANSCRIBE_MODEL", config.TRANSCRIBE_MODEL),
+    ):
+        if configured in available:
+            print(f"  OK       {label} = {configured}")
+        else:
+            missing = True
+            print(f"  MISSING  {label} = {configured}")
+
+    if missing:
+        print(
+            "\nA configured model is no longer served. Pick a replacement from the "
+            "list above and set it in .env.\n"
+            "Groq's schedule: https://console.groq.com/docs/deprecations"
+        )
+        return 1
+
+    return 0
+
+
 def _text_mode(bot: assistant_module.Assistant) -> int:
     """Typed conversation, useful when no microphone is available."""
     print("Typed mode. Enter a blank line or Ctrl+C to quit.\n")
@@ -99,6 +134,11 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="show the built-in system commands and exit",
     )
+    parser.add_argument(
+        "--check-models",
+        action="store_true",
+        help="check that the configured Groq models are still available, then exit",
+    )
     args = parser.parse_args(argv)
 
     if args.list_commands:
@@ -112,6 +152,9 @@ def main(argv: list[str] | None = None) -> int:
     except config.ConfigError as exc:
         print(f"Configuration error: {exc}", file=sys.stderr)
         return 1
+
+    if args.check_models:
+        return _check_models()
 
     bot = assistant_module.Assistant(
         require_wake_word=False if args.no_wake_word else config.REQUIRE_WAKE_WORD

@@ -5,7 +5,7 @@ folders, search the web, tell you the time or the weather — and when you ask
 something it has no command for, it just answers you conversationally.
 
 Speech recognition and language understanding both run on [Groq](https://groq.com):
-`whisper-large-v3-turbo` for transcription and `llama-3.3-70b-versatile` for
+`whisper-large-v3-turbo` for transcription and `openai/gpt-oss-120b` for
 conversation. Replies are spoken back through Google Text-to-Speech.
 
 There are two ways to use it — a terminal voice loop, and a browser interface
@@ -19,7 +19,7 @@ with push-to-talk.
   of cutting you off at a fixed number of seconds.
 - **34 built-in commands** — launch applications, open your user folders, search
   Google or YouTube, open a file by name, check the time, date, weather, or news.
-- **Conversation fallback** — anything that is not a command goes to Llama 3.3
+- **Conversation fallback** — anything that is not a command goes to GPT-OSS 120B
   with a rolling memory of the last several turns.
 - **Two front ends** — the CLI for everyday use, and a React web app that talks
   to a Flask API.
@@ -85,6 +85,7 @@ Useful flags:
 | `--no-wake-word` | Reply to everything, no "hey Sarah" needed |
 | `--text` | Type instead of speaking, no microphone required |
 | `--list-commands` | Print every built-in command and exit |
+| `--check-models` | Verify your configured Groq models are still served |
 
 ## Running the web interface
 
@@ -138,11 +139,37 @@ Every setting has a sensible default. The ones worth knowing about:
 | `REQUIRE_WAKE_WORD` | `true` | Set `false` to always listen |
 | `SILENCE_THRESHOLD` | `0.015` | Raise it in a noisy room; lower it if recordings cut off while you are still talking |
 | `SILENCE_SECONDS` | `1.2` | Quiet time that ends a recording |
-| `CHAT_MODEL` | `llama-3.3-70b-versatile` | Any Groq chat model |
+| `CHAT_MODEL` | `openai/gpt-oss-120b` | Any Groq chat model |
+| `REASONING_EFFORT` | `low` | `low`, `medium`, or `high`, for GPT-OSS models |
+| `MAX_COMPLETION_TOKENS` | `1024` | Shared by reasoning and the reply |
 | `WEATHER_API_KEY` | — | Optional, [openweathermap.org](https://openweathermap.org/api) |
 | `NEWS_API_KEY` | — | Optional, [newsapi.org](https://newsapi.org) |
 
 See `.env.example` for the complete list.
+
+## A note on models
+
+Groq retires models on a rolling schedule — `llama-3.3-70b-versatile`, which this
+project originally used, was shut down on August 16, 2026. Both model IDs are
+therefore environment variables rather than constants, so swapping one is a
+`.env` edit and not a code change.
+
+To check whether your configured models are still being served:
+
+```bash
+python -m sarah --check-models
+```
+
+That lists everything Groq is currently serving and tells you if either of your
+configured IDs has disappeared. Groq's
+[deprecation page](https://console.groq.com/docs/deprecations) is the
+authoritative schedule.
+
+GPT-OSS is a reasoning model: it thinks before it answers, and those reasoning
+tokens are drawn from the same `MAX_COMPLETION_TOKENS` budget as the reply. If
+answers start coming back empty, that budget is the first thing to raise. Sarah
+requests `reasoning_effort=low` because a spoken assistant needs to be quick, and
+discards the reasoning text, which is never read aloud.
 
 ## Project layout
 
