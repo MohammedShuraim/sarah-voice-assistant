@@ -5,18 +5,12 @@
 
 ---
 
-<!-- Next section: mark, then name, then tagline -->
 <div align="center">
 <img src="docs/logo.png" alt="Sarah logo" width="128">
 
 <p><b>Sarah</b></p>
 
 <p>AI powered Virtual Desktop</p>
-</div>
-
----
-
-<div align="center">
 
 A hands-free desktop assistant that combines **speech-to-text**, **spoken command routing**, **conversational AI**, and a **push-to-talk web client** — built to control a Windows desktop and answer anything that is not a command.
 
