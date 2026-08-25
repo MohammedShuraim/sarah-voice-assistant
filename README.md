@@ -34,6 +34,20 @@ A hands-free desktop assistant that combines **speech-to-text**, **spoken comman
 
 ---
 
+<div align="center">
+
+### See it with your own eyes
+
+▶️ **[Watch the Sarah demo on Loom](https://www.loom.com/share/d10d493df9b44a54be501d36abeffb75)**
+
+Type a command · Open Downloads · Speak with the mic · Hear Sarah answer
+
+GitHub cannot play video inside a README — click the preview to watch the walkthrough.
+
+</div>
+
+---
+
 ## Project Overview
 
 **Sarah** is a full-stack voice product that behaves like one assistant — not a pile of scripts taped together.
