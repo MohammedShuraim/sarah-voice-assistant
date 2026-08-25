@@ -4,7 +4,7 @@ Keep the same section order so your GitHub pages look like one portfolio.
 -->
 
 <div align="center">
-<img src="docs/banner.png" alt="{{PROJECT_NAME}}" width="100%">
+<img src="docs/banner.gif" alt="{{PROJECT_NAME}}" width="100%">
 </div>
 
 ---

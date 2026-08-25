@@ -1,6 +1,6 @@
-<!-- Upper section: hero -->
+<!-- Upper section: hero — GitHub plays GIFs (animated SVG is often blocked) -->
 <div align="center">
-<img src="docs/banner.png" alt="Sarah — Virtual Desktop Assistant" width="100%">
+<img src="docs/banner.gif" alt="Sarah — speak, and Chrome opens" width="100%">
 </div>
 
 ---
@@ -48,11 +48,17 @@ GitHub cannot play video inside a README — click the preview to watch the walk
 
 ---
 
-## Project Overview
+## About this project
 
-**Sarah** is a full-stack voice product that behaves like one assistant — not a pile of scripts taped together.
+**Sarah** is not a five-second recorder script and not three disconnected demos. It is a **product-shaped desktop voice assistant**: you speak or type, she routes a known command or answers conversationally, and she talks back.
 
 The same `Assistant` class drives the microphone loop and the browser. Recording, HTTP, and playback stay outside it, so the CLI and the React client cannot drift apart in what they understand.
+
+The hero GIF is that loop in one shot: the mic hears **“open Chrome”**, Sarah confirms, and the desktop opens the browser.
+
+---
+
+## Project Overview
 
 | Capability | What it does |
 |---|---|
@@ -145,11 +151,14 @@ The system prompt is stored separately from chat history so it cannot be trimmed
 
 | Surface | Preview |
 |---|---|
+| **Hero loop** | ![Speak, then Chrome opens](docs/banner.gif) |
 | **Web chat** | ![Web chat](docs/screenshots/web-chat.png) |
 | **Microphone** | ![Microphone](docs/screenshots/mic-button.png) |
 | **Command palette** | ![Commands](docs/screenshots/commands.png) |
 | **Status bar** | ![Status](docs/screenshots/status-bar.png) |
 | **CLI voice loop** | ![CLI](docs/screenshots/cli.png) |
+
+The hero is an animated **GIF**: the mic takes the command, Sarah answers, Chrome opens. GitHub plays GIFs in the README (animated SVG is often blocked).
 
 ---
 
@@ -367,9 +376,10 @@ sarah-voice-assistant/
 │   └── vite.config.js         # /api → :5000
 ├── tests/                     # commands · assistant · AI client
 ├── docs/
-│   ├── banner.png
+│   ├── banner.gif             # Animated mic → Chrome loop
+│   ├── banner.png             # Static fallback
 │   ├── logo.png
-│   └── screenshots/           # Product captures for this README
+│   └── screenshots/
 ├── .env.example
 ├── pyproject.toml
 ├── requirements.txt
