@@ -1,6 +1,8 @@
 <div align="center">
 
-<img src="docs/banner.svg" alt="Sarah — Virtual Desktop Assistant" width="100%">
+<img src="docs/banner.png" alt="Sarah — Virtual Desktop Assistant" width="100%">
+
+<img src="docs/logo.png" alt="Sarah logo" width="96">
 
 # Sarah
 
@@ -349,7 +351,8 @@ sarah-voice-assistant/
 │   └── vite.config.js         # /api → :5000
 ├── tests/                     # commands · assistant · AI client
 ├── docs/
-│   ├── banner.svg
+│   ├── banner.png
+│   ├── logo.png
 │   └── screenshots/           # Product captures for this README
 ├── .env.example
 ├── requirements.txt
