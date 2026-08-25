@@ -2,11 +2,15 @@
 
 <img src="docs/banner.png" alt="Sarah — Virtual Desktop Assistant" width="100%">
 
-<img src="docs/logo.png" alt="Sarah logo" width="96">
+</div>
+
+<div align="center">
+
+<img src="docs/logo.png" alt="Sarah logo" width="120">
 
 # Sarah
 
-### AI-Powered Virtual Desktop Assistant
+### AI powered Virtual Desktop
 
 A hands-free desktop assistant that combines **speech-to-text**, **spoken command routing**, **conversational AI**, and a **push-to-talk web client** — built to control a Windows desktop and answer anything that is not a command.
 
