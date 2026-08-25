@@ -371,8 +371,10 @@ sarah-voice-assistant/
 │   ├── logo.png
 │   └── screenshots/           # Product captures for this README
 ├── .env.example
+├── pyproject.toml
 ├── requirements.txt
 ├── requirements-dev.txt
+├── LICENSE
 └── README.md
 ```
 
