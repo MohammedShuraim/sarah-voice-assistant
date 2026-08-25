@@ -444,8 +444,6 @@ Missing Groq keys surface as **502** with an actionable sentence, not a bare HTT
 
 ---
 
----
-
 ## Troubleshooting
 
 | Symptom | Fix |
