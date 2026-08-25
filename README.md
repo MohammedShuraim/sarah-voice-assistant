@@ -133,8 +133,6 @@ The system prompt is stored separately from chat history so it cannot be trimmed
 | **Status bar** | ![Status](docs/screenshots/status-bar.png) |
 | **CLI voice loop** | ![CLI](docs/screenshots/cli.png) |
 
-> Drop PNG/WebP captures under `docs/screenshots/` using the filenames above so the table lights up on GitHub.
-
 ---
 
 ## Application Flow
@@ -445,27 +443,6 @@ Built for **one local user**. Conversation history lives in process memory.
 Missing Groq keys surface as **502** with an actionable sentence, not a bare HTTP 500.
 
 ---
-
-## Screenshots
-
-Place product captures here for recruiters and reviewers:
-
-```text
-docs/screenshots/
-├── web-chat.png
-├── mic-button.png
-├── commands.png
-├── status-bar.png
-└── cli.png
-```
-
-| Screen | File |
-|---|---|
-| Web chat | `docs/screenshots/web-chat.png` |
-| Microphone | `docs/screenshots/mic-button.png` |
-| Command palette | `docs/screenshots/commands.png` |
-| Status bar | `docs/screenshots/status-bar.png` |
-| CLI voice loop | `docs/screenshots/cli.png` |
 
 ---
 
